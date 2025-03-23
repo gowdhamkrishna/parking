@@ -1,0 +1,28 @@
+export const sampleParkingSpots = [
+  {
+    name: "Downtown Parking Center",
+    address: "123 Main St, Downtown",
+    location: { type: "Point", coordinates: [-73.935242, 40.73061] },
+    totalSpots: 100,
+    availableSpots: 45,
+    price: 15,
+    rating: 4.5,
+    images: ["../public/image.png",'../public/image copy.png'],
+    amenities: ["24/7 Access", "Security", "EV Charging", "Covered"],
+    operatingHours: { open: "00:00", close: "23:59" },
+    isActive: true,
+  },
+  {
+    name: "Shopping Mall Parking",
+    address: "456 Retail Ave, Shopping District",
+    location: { type: "Point", coordinates: [-73.945242, 40.74061] },
+    totalSpots: 200,
+    availableSpots: 120,
+    price: 10,
+    rating: 4.2,
+    images: ["../public/image.png"],
+    amenities: ["Security", "Covered", "Handicap Accessible"],
+    operatingHours: { open: "08:00", close: "22:00" },
+    isActive: true,
+  },
+]; 
