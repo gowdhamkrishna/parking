@@ -10,14 +10,18 @@ export const POST = async (req) => {
     await connect();
 
     const { searchParams } = new URL(req.url);
-    const body = await req.json(); // Assuming JSON request body
+    const body = await req.json();
+    console.log(body);
+    
 
     // Retrieve query parameters safely
     const name = searchParams.get("name") || "Unknown";
     const serviceCategory = searchParams.get("serviceCategory") || "Default";
-    const startingPrice = searchParams.get("startingPrice") || 0;
+    const startingPrice = Number(searchParams.get("startingPrice")) || 0;
 
     // Find the payment record
+    console.log(body.razorpay_order_id);
+    
     const payment = await Payment.findOne({ oid: body.razorpay_order_id });
 
     if (!payment) {
@@ -59,7 +63,6 @@ export const POST = async (req) => {
       `${process.env.NEXT_PUBLIC_URL}/paymentsuccess?orderid=${payment.oid}`,
       { status: 302 }
     );
-
   } catch (error) {
     console.error("Payment Processing Error:", error);
     return NextResponse.json({ success: false, message: "An error occurred" });

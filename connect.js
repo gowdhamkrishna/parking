@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export const connectDb = async () => {
+export const connect = async () => {
     try {
         // If already connected, return the existing connection
         if (mongoose.connections[0].readyState) {

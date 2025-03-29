@@ -58,7 +58,7 @@ export default function SpotDetails({ spot, onClose }) {
         amenities: spot.amenities,
         bookingHours: bookingHours,
         selectedDate: selectedDate,
-      });
+      }).toString();
       const orderId = response.id;
       console.log(spot);
       
@@ -70,7 +70,7 @@ export default function SpotDetails({ spot, onClose }) {
         name: user.fullName,
         description: "Payment Transaction for Parking Spot",
         image: "https://example.com/your_logo",
-        callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay?${params.toString()}`,
+        callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay?${params}`,
         order_id: orderId,
         prefill: {
           name: user.fullName,

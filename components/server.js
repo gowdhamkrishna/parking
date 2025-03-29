@@ -1,11 +1,11 @@
 "use server";
 import Razorpay from "razorpay";
 import Payment from "@/models/payment";
-import { connectDb } from "@/connect";
+import { connect } from "@/connect";
 import Receipt from "@/models/receipt";
 
 export const initiate = async (amount, to_username, paymentform) => {
-    await connectDb();
+    await connect();
 
 
     var instance = new Razorpay({
@@ -32,7 +32,7 @@ console.log('payment is save in the database')
     return order;
 };
 export const showLastReceipt = async (name) => {
-    await connectDb();
+    await connect();
   
     try {
       const receipt = await Receipt.findOne(
