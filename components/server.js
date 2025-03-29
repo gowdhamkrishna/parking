@@ -1,7 +1,8 @@
 "use server";
 import Razorpay from "razorpay";
-import Payment from "@/models/payment"; // Fix: Use uppercase "P" for consistency
+import Payment from "@/models/payment";
 import { connectDb } from "@/connect";
+import Receipt from "@/models/receipt";
 
 export const initiate = async (amount, to_username, paymentform) => {
     await connectDb();
@@ -30,3 +31,25 @@ export const initiate = async (amount, to_username, paymentform) => {
 console.log('payment is save in the database')
     return order;
 };
+export const showLastReceipt = async (name) => {
+    await connectDb();
+  
+    try {
+      const receipt = await Receipt.findOne(
+        { name:name }, // Assuming you store userId in Receipt
+        { _id: 0 }  // Exclude _id field
+      )
+        .sort({ time: -1 }) // Get the most recent receipt
+        .lean();
+  
+      if (!receipt) {
+        return { success: false, message: "No receipts found for this user" };
+      }
+  
+      return { success: true, data: receipt };
+    } catch (error) {
+      console.error("Error fetching last receipt:", error);
+      return { success: false, message: "An error occurred" };
+    }
+  };
+  

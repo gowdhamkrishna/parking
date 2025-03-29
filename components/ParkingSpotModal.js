@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 import { initiate } from "./server"; // Assuming this function calls your backend to create an order
 import { useUser } from "@clerk/nextjs";
-export default function SpotDetails({ spot, onClose}) {
-  const {user}=useUser()
+export default function SpotDetails({ spot, onClose }) {
+  const { user } = useUser();
   const [bookingHours, setBookingHours] = useState(1);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false); // To handle loading state
+  const [isProcessing, setIsProcessing] = useState(false); // To 
 
   const totalPrice = spot ? spot.price * bookingHours : 0;
 
@@ -30,8 +30,7 @@ export default function SpotDetails({ spot, onClose}) {
       alert("Payment gateway is still loading, please try again.");
       return;
     }
-    
-console.log(user.primaryEmailAddress.emailAddress)
+
     if (!user || !user.fullName || !user.primaryEmailAddress.emailAddress) {
       alert("Please log in to proceed with the payment.");
       return;
@@ -50,12 +49,19 @@ console.log(user.primaryEmailAddress.emailAddress)
         alert("Error: No order ID returned from the server.");
         return;
       }
-      else{
-        console.log("Id creation success ")
-      }
-
+      const params = new URLSearchParams({
+        spotName: spot.name,
+        address: spot.address,
+        price: spot.price,
+        totalSpots: spot.totalSpots,
+        availableSpots: spot.availableSpots,
+        amenities: spot.amenities,
+        bookingHours: bookingHours,
+        selectedDate: selectedDate,
+      });
       const orderId = response.id;
-
+      console.log(spot);
+      
       // Razorpay payment options
       const options = {
         key: process.env.NEXT_PUBLIC_KEY_ID, // Ensure your Razorpay key is set correctly in environment variables
@@ -63,8 +69,8 @@ console.log(user.primaryEmailAddress.emailAddress)
         currency: "INR",
         name: user.fullName,
         description: "Payment Transaction for Parking Spot",
-        image: "https://example.com/your_logo", 
-        callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
+        image: "https://example.com/your_logo",
+        callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay?${params.toString()}`,
         order_id: orderId,
         prefill: {
           name: user.fullName,
@@ -72,13 +78,23 @@ console.log(user.primaryEmailAddress.emailAddress)
           contact: user.contact || "8678687686", // Ensure contact field exists
         },
         notes: {
-          address: "Virtual Address", // You can replace this with the actual address if needed
+          address: "Virtual Address",
+      
         },
         theme: {
           color: "#000000", // Customize the Razorpay button color
-        }
+        },
       };
+
       const rzp1 = new Razorpay(options);
+
+      rzp1.on("payment.failed", async function (response) {
+        console.error("Payment failed:", response);
+        alert("Payment failed. Please try again.");
+      });
+
+      rzp1.on("payment.success")
+
       rzp1.open();
     } catch (error) {
       console.error("Error:", error);
@@ -101,7 +117,7 @@ console.log(user.primaryEmailAddress.emailAddress)
             </div>
             <button
               onClick={onClose}
-              className="text-white hover:text-gray-200 transition-colors"
+              className="text-gray-600 hover:text-gray-200 transition-colors"
               aria-label="Close"
             >
               <svg
@@ -138,7 +154,7 @@ console.log(user.primaryEmailAddress.emailAddress)
           </div>
 
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-3">Amenities</h3>
+            <h3 className="text-black text-lg font-semibold mb-3">Amenities</h3>
             <div className="flex flex-wrap gap-2">
               {spot.amenities?.map((amenity, index) => (
                 <span
@@ -152,7 +168,7 @@ console.log(user.primaryEmailAddress.emailAddress)
           </div>
 
           <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold mb-4">Book Your Spot</h3>
+            <h3 className="text-lg  text-gray-600 font-semibold mb-4">Book Your Spot</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -160,10 +176,11 @@ console.log(user.primaryEmailAddress.emailAddress)
                 </label>
                 <input
                   type="date"
+                  
                   min={new Date().toISOString().split("T")[0]}
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full text-black p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
@@ -174,7 +191,7 @@ console.log(user.primaryEmailAddress.emailAddress)
                 <select
                   value={bookingHours}
                   onChange={(e) => setBookingHours(Number(e.target.value))}
-                  className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full   text-black p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   {[...Array(12).keys()].map((hour) => (
                     <option key={hour + 1} value={hour + 1}>
@@ -187,7 +204,7 @@ console.log(user.primaryEmailAddress.emailAddress)
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-gray-600">Total Amount</span>
-                  <span className="font-medium">₹{totalPrice}</span>
+                  <span className=" text-black font-medium">₹{totalPrice}</span>
                 </div>
               </div>
             </div>
@@ -195,13 +212,13 @@ console.log(user.primaryEmailAddress.emailAddress)
         </div>
 
         <div className="bg-gray-50 px-6 py-4 border-t flex justify-end space-x-4">
-          <button onClick={onClose} className="text-gray-700">
+          <button onClick={onClose} className="text-black">
             Cancel
           </button>
           <button
             onClick={handlePayment}
             disabled={isProcessing}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md disabled:opacity-50"
+            className="bg-blue-600 text-gray-600 px-6 py-2 rounded-md disabled:opacity-50"
           >
             {isProcessing ? "Processing..." : "Pay Now"}
           </button>
