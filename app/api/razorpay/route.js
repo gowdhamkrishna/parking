@@ -9,15 +9,18 @@ export const POST = async (req) => {
   try {
     await connect();
 
-    const { searchParams } = new URL(req.url);
-    const body = await req.json();
-    console.log(body);
+    const formData = await req.formData();
+    const body = Object.fromEntries(formData.entries());
+    const url = new URL(req.url);
+    const searchParams = url.searchParams;
     
 
-    // Retrieve query parameters safely
     const name = searchParams.get("name") || "Unknown";
-    const serviceCategory = searchParams.get("serviceCategory") || "Default";
-    const startingPrice = Number(searchParams.get("startingPrice")) || 0;
+    const address = searchParams.get("address") || "Unknown";
+    const time = searchParams.get("bookingHours") || "Unknown";
+    const spotName = searchParams.get("spotName") || "Unknown";
+    const price = searchParams.get("price") || "Unknown";
+    const slot = searchParams.get("totalSpots") || "Unknown";
 
     // Find the payment record
     console.log(body.razorpay_order_id);
@@ -51,10 +54,12 @@ export const POST = async (req) => {
 
     // Create a receipt
     await Receipt.create({
-      name,
-      ServiceCategory: serviceCategory,
-      ServicePerson: name,
-      Payment: startingPrice,
+      name:name,
+      address:address,
+      time:time,
+      price:price,
+      parkingPlace: spotName,
+      slot:slot,
       orderid: payment.oid,
     });
 
@@ -68,3 +73,5 @@ export const POST = async (req) => {
     return NextResponse.json({ success: false, message: "An error occurred" });
   }
 };
+  
+  

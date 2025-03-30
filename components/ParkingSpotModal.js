@@ -62,40 +62,47 @@ export default function SpotDetails({ spot, onClose }) {
       const orderId = response.id;
       console.log(spot);
       
-      // Razorpay payment options
       const options = {
-        key: process.env.NEXT_PUBLIC_KEY_ID, // Ensure your Razorpay key is set correctly in environment variables
-        amount: totalPrice * 100, // Convert to paise (1 INR = 100 paise)
+        key: process.env.NEXT_PUBLIC_KEY_ID,
+        amount: totalPrice * 100,
         currency: "INR",
-        name: user.fullName,
-        description: "Payment Transaction for Parking Spot",
+        name: "Parking Spot",
+        description: "Parking Booking Payment",
         image: "https://example.com/your_logo",
+        order_id: orderId, // ✅ Fix here
         callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay?${params}`,
-        order_id: orderId,
         prefill: {
           name: user.fullName,
-          email: user.primaryEmailAddress.emailAddress,
-          contact: user.contact || "8678687686", // Ensure contact field exists
+          email: user.primaryEmailAddress.emailAddress, // ✅ Added email
         },
         notes: {
           address: "Virtual Address",
-      
         },
         theme: {
-          color: "#000000", // Customize the Razorpay button color
+          color: "#3399cc",
+        },
+        modal: {
+          ondismiss: function () {
+            console.log("Payment window closed");
+          },
         },
       };
-
-      const rzp1 = new Razorpay(options);
-
-      rzp1.on("payment.failed", async function (response) {
+      
+      // ✅ Add check before creating Razorpay instance
+      if (!window.Razorpay) {
+        alert("Razorpay SDK failed to load. Please refresh and try again.");
+        return;
+      }
+      
+      const rzp1 = new window.Razorpay(options);
+      
+      rzp1.on("payment.failed", function (response) {
         console.error("Payment failed:", response);
         alert("Payment failed. Please try again.");
       });
-
-      rzp1.on("payment.success")
-
+      
       rzp1.open();
+      
     } catch (error) {
       console.error("Error:", error);
       alert("An error occurred while processing the payment. Please try again.");

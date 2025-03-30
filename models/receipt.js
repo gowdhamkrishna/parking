@@ -12,15 +12,15 @@ const receiptSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  address:{required: true,type:String},
+  address: { required: true, type: String },
   time: { type: String, required: true },
   createdAt: {
     type: Date,
     default: Date.now
   },
-  slot:{
-    type:Number,
-    required:true
+  slot: {
+    type: Number,
+    required: true
   },
   price: {
     type: Number,
