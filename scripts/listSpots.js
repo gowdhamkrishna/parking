@@ -9,7 +9,7 @@ export async function listParkingSpots() {
     await mongoose.connect(MONGODB_URI);
     console.log("Connected to MongoDB");
 
-    // Fetch all parking spots
+    // Fetch all parking spots as plain objects
     const spots = await Parking.find({}).select("-__v").lean();
 
     if (spots.length === 0) {
@@ -17,14 +17,20 @@ export async function listParkingSpots() {
       return [];
     }
 
-    console.log("Parking Spots:", spots);
+    // 🧹 Convert ObjectId and Date fields to strings
+    const serializedSpots = spots.map((spot) => ({
+      ...spot,
+      _id: spot._id.toString(),
+      createdAt: spot.createdAt ? spot.createdAt.toISOString() : null,
+      updatedAt: spot.updatedAt ? spot.updatedAt.toISOString() : null,
+    }));
 
-    return spots; // Return the raw array, not JSON.stringify(spots)
+    console.log("Parking Spots:", serializedSpots);
+    return serializedSpots;
   } catch (error) {
     console.error("Error:", error);
     return [];
   } finally {
-    // Close the MongoDB connection properly
     await mongoose.disconnect();
     console.log("Disconnected from MongoDB");
   }

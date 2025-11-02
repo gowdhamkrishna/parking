@@ -15,7 +15,6 @@ export default function BookPage() {
   const [parkingSpots, setParkingSpots] = useState([]);
   const [error, setError] = useState(null);
   const [selectedSpot, setSelectedSpot] = useState(null);
-  const [showBookingModal, setShowBookingModal] = useState(false);
 
   useEffect(() => {
     getDetails()
@@ -47,16 +46,10 @@ export default function BookPage() {
     }
   }, [isLoaded, userId, sessionId]);
 
-const getDetails=async (params) => {
-  const data=await listParkingSpots();
-  setParkingSpots(data)
-  
-}
-
-  const handleBookNow = (spot) => {
-    setSelectedSpot(spot);
-    setShowBookingModal(true);
-  };
+  const getDetails = async () => {
+    const data = await listParkingSpots();
+    setParkingSpots(data)
+  }
 
   if (!isLoaded || loading) {
     return (
@@ -117,11 +110,11 @@ const getDetails=async (params) => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {parkingSpots.map((spot,index) => (
+              {parkingSpots.map((spot, index) => (
                 <div key={index} className="bg-white rounded-lg shadow-sm overflow-hidden">
                   <div className="relative h-48">
                     <Image
-                      src={spot.images[0] || '/default-parking.jpg'}
+                      src={`/${spot.images[0]}`}
                       alt={spot.name}
                       fill
                       className="object-cover"
@@ -159,11 +152,11 @@ const getDetails=async (params) => {
                     </div>
                     <div className="mt-4 flex items-center justify-between">
                       <div className="text-lg font-bold text-gray-900">
-                        ${spot.price}/hour
+                        ₹{spot.price}/hour
                       </div>
                       <button
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent triggering the div click
+                          e.stopPropagation();
                           setSelectedSpot(spot);
                         }}
                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -186,46 +179,6 @@ const getDetails=async (params) => {
           </div>
         </div>
       </div>
-
-      {/* Booking Modal */}
-      {showBookingModal && selectedSpot && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4">Book Parking Spot</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Location</label>
-                <p className="mt-1 text-gray-900">{selectedSpot.name}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Price</label>
-                <p className="mt-1 text-gray-900">${selectedSpot.price}/hour</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Available Spots</label>
-                <p className="mt-1 text-gray-900">{selectedSpot.availableSpots}</p>
-              </div>
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setShowBookingModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    // Handle booking confirmation
-                    setShowBookingModal(false);
-                  }}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Confirm Booking
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Show SpotDetails modal when a spot is selected */}
       {selectedSpot && (

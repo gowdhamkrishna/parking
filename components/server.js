@@ -31,12 +31,12 @@ export const initiate = async (amount, to_username, paymentform) => {
 console.log('payment is save in the database')
     return order;
 };
-export const showLastReceipt = async (name) => {
+export const showLastReceipt = async (id) => {
     await connect();
   
     try {
       const receipt = await Receipt.findOne(
-        { name:name }, // Assuming you store userId in Receipt
+        { orderid:id }, // Assuming you store userId in Receipt
         { _id: 0 }  // Exclude _id field
       )
         .sort({ time: -1 }) // Get the most recent receipt

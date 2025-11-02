@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { showLastReceipt } from "@/components/server";
 import { FaReceipt, FaPrint, FaDownload, FaCheck } from "react-icons/fa";
-
+import { useSearchParams } from 'next/navigation'
 const Page = () => {
   const { user } = useUser();
+  const searchParams = useSearchParams()
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,8 +16,11 @@ const Page = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await showLastReceipt(user.fullName);
+         const search = searchParams.get('orderid')
+         console.log(search);
+        const response = await showLastReceipt(search);
         setData(response.data);
+        console.log(response.data)
       } catch (error) {
         console.error("Error fetching receipt:", error);
       } finally {
